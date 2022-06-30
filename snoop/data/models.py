@@ -303,6 +303,14 @@ class Blob(models.Model):
                 b.archive_source_key = archive_source_key
                 b.archive_source_blob = archive_source_blob
                 b.save()
+            # if we disabled archive mounting, reprocessing should clear out those options
+            if b.archive_source_blob != archive_source_blob \
+                    or b.archive_source_key != archive_source_key \
+                    or b.collection_source_key != collection_source_key:
+                b.archive_source_blob = archive_source_blob
+                b.archive_source_key = archive_source_key
+                b.collection_source_key = collection_source_key
+                b.save()
             return b
 
         except ObjectDoesNotExist:
