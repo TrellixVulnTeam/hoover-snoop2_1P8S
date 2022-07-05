@@ -599,7 +599,7 @@ def mount_7z_archive(blob):
                 else:
                     log.info('no valid file extension in path; looking in File table...')
                     path = None
-                    for file_entry in models.File.objects.filter(original_blob=blob):
+                    for file_entry in models.File.objects.filter(original=blob):
                         file_entry_ext = os.path.splitext(file_entry.name)[-1][:20]
                         log.info('found extension: "%s" from file entry %s', file_entry_ext, file_entry)
                         if file_entry_ext in SEVENZIP_ACCEPTED_EXTENSIONS:
