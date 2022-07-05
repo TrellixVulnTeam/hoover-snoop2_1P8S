@@ -104,9 +104,9 @@ def guess_csv_settings(file_stream, mime_encoding):
     GUESS_READ_LEN = 8192
     text = file_stream.read(GUESS_READ_LEN)
     if isinstance(text, bytes):
-        mime_encoding = mime_encoding or 'ascii'
+        mime_encoding = mime_encoding or 'latin-1'
         if mime_encoding.startswith('unknown'):
-            mime_encoding = 'ascii'
+            mime_encoding = 'latin-1'
 
         text = text.decode(mime_encoding, errors='backslashreplace')
     try:
