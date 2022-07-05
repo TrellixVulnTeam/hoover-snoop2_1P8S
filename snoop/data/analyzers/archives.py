@@ -639,8 +639,7 @@ def unarchive_7z(blob):
                 except Exception as e:
                     log.exception(e)
                     log.warning('using old method (unpacking everything)...')
-            else:
-                return unarchive_7z_fallback(blob)
+            return unarchive_7z_fallback(blob)
         finally:
             os.chdir(x)
 
