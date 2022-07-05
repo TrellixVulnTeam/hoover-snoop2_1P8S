@@ -294,8 +294,13 @@ def get_table_info(table_path, mime_type, mime_encoding):
                 auto_detect_datetime=False,
                 **extra_kw,
             )
-            row = list(next(rows))
-            col_count = len(row)
+            try:
+                row = list(next(rows))
+                col_count = len(row)
+            except StopIteration:
+                row = []
+                col_count = 0
+                log.warning('no rows found for doc "%s"', table_path)
             colnames = sheet.colnames or collections.current().default_table_head_by_len.get(col_count) or []
             rv['sheets'].append(sheet.name)
             rv['sheet-columns'][sheet.name] = colnames
