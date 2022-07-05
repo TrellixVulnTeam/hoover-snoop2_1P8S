@@ -282,8 +282,13 @@ def get_table_info(table_path, mime_type, mime_encoding):
                 auto_detect_datetime=False,
                 **extra_kw,
             )
-            row_count = _get_row_count(rows)
-            f2.seek(0)
+            try:
+                row_count = _get_row_count(rows)
+                f2.seek(0)
+            except Exception as e:
+                log.error('cannot determine row count for table "%s"!', table_path)
+                log.exception(e)
+                return None
 
             rows = pyexcel.iget_array(
                 file_stream=f2,
@@ -370,8 +375,13 @@ def unpack_table(table_path, output_path, mime_type=None, mime_encoding=None, **
                 auto_detect_datetime=False,
                 **extra_kw,
             )
-            row_count = _get_row_count(rows)
-            f2.seek(0)
+            try:
+                row_count = _get_row_count(rows)
+                f2.seek(0)
+            except Exception as e:
+                log.error('cannot determine row count for table "%s"!', table_path)
+                log.exception(e)
+                raise SnoopTaskBroken('table read error', 'table_error')
 
             # split large tables, so our in-memory archive crawler doesn't crash.
             # only do the split for sizes bigger than 1.5X the limit, so we avoid
@@ -622,13 +632,15 @@ def unarchive_7z(blob):
         os.chdir(pwd)
         try:
             # Either mount, if possible, and if not, use the CLI to unpack into blobs
-            if not collections.current().disable_archive_mounting:
+            if not collections.current().disable_archive_mounting \
+                    and not blob.archive_source_blob and not blob.archive_source_key:
                 try:
                     return unarchive_7z_with_mount(blob)
                 except Exception as e:
                     log.exception(e)
                     log.warning('using old method (unpacking everything)...')
-            return unarchive_7z_fallback(blob)
+            else:
+                return unarchive_7z_fallback(blob)
         finally:
             os.chdir(x)
 
