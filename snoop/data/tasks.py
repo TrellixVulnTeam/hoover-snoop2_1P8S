@@ -843,6 +843,16 @@ def dispatch_walk_tasks():
     walk.laterz(root.pk)
 
 
+def dispatch_directory_walk_tasks(directory_pk):
+    """Trigger processing of a specific directory.
+    """
+
+    from .filesystem import walk
+    directory = models.Directory.objects.get(pk=directory_pk)
+    assert directory, "Directory does not exist"
+    return walk.laterz(directory.pk)
+
+
 def save_collection_stats():
     """Run the expensive computations to get collection stats, then save result in database.
     """
